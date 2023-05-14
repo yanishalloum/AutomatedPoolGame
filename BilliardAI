@@ -6,42 +6,37 @@ import random
 
 pygame.init()#initialise la lib pygame
 
+#cree l'ecran
 width = 1200
 height = 678
 outerHeight = 50
-
-#fenetre de jeu
 screen = pygame.display.set_mode((width, height + outerHeight))
-pygame.display.set_caption("Pool")
+pygame.display.set_caption("BilliardAI")
 
-#crée l'espace pymunk
-space = pymunk.Space()
-staticBody = space.static_body#pour donner impression de friction, attacher boules à space pour qu'elles ralentissent avec le temps
-draw_options = pymunk.pygame_util.DrawOptions(screen)
-
-#clock
-clock = pygame.time.Clock()
-FPS = 120 #taux de raffraichissement et frame per sec
-
-#variables de jeu
+#variables diverses
 d = 36 #diametre de boule
 holeD = 66 #diametre du trou
-pocketedBallsImages = []
-pocketedBalls = []
-takingShot = True
-#force = 200
+pocketedBallsImages = [] #ne sert plus à rien dans le code mais je le laisse au cas où
+pocketedBalls = [] #ne sert plus à rien dans le code mais je le laisse au cas où
+takingShot = True 
 powerIncrease = False
-maxForce = 10000
 forceDir = 1
 isCueBallPocketed = False
 points = 0
 
-#couleurs
+#crée l'espace pymunk
+space = pymunk.Space()
+staticBody = space.static_body #pour donner impression de friction, attacher boules à espace pour qu'elles ralentissent avec le temps
+draw_options = pymunk.pygame_util.DrawOptions(screen)
+
+#va permettre d'actualiser l'affichage
+clock = pygame.time.Clock()
+FPS = 120 #taux de raffraichissement et frame per sec
+
+#couleurs et police
 background = (50, 50, 50)
 red = (255, 0, 0)
 white = (255, 255, 255)
-
-#police 
 police = pygame.font.SysFont("Lato", 30) #police et taille
 largePolice = pygame.font.SysFont("Lato",60)
 
@@ -56,6 +51,49 @@ for i in range(1, 17):
         ballImages.append(ballImage)
 cueImage = pygame.image.load(f"pool_tutorial/assets/images/cue.png").convert_alpha()
 #***********************
+
+#fonctions pour "l'IA"***************************************************************************
+
+def generateAngle():
+    return random.uniform(0, 2 * math.pi) #génère un angle aléatoire en radians entre 0 et 2pi
+
+def generateForce():
+    return random.uniform(9000, 15000) #génère une force aléatoire entre 100 et 1000
+
+def generateOrientation():
+    orientationX = random.uniform(50, 1100)
+    orientationY = random.uniform(70, 620)
+    return (orientationX, orientationY)
+
+def getBestAttributes(Attributes):
+    scoreArray = []
+    forceArray = []
+    posArray = [] 
+
+    bestAttributes = []
+
+    for i in range(len(Attributes)):
+        scoreArray.append(Attributes[i][0])
+        forceArray.append(Attributes[i][1])
+        posArray.append(Attributes[i][2])
+
+        maxScore = max(scoreArray)
+        indexMax = scoreArray.index(maxScore)
+
+        bestAttributes.append((forceArray[indexMax], posArray[indexMax]))
+    return bestAttributes     
+
+    
+def chooseBestAttributes(Attributes, nbGene, nbCoups):
+    bestAttributes = []
+    listOfAttributes = []
+    for j in range(nbCoups):
+        for i in range(nbGene):
+            listOfAttributes.append(Attributes[i][j])
+        bestAttributes.append(getBestAttributes(listOfAttributes))
+
+    return bestAttributes
+#*************************************************************************************************
 
 #ecrit texte sur l'ecran 
 def drawText(text, font, textColor, x, y):
@@ -117,24 +155,16 @@ def reInitBalls():
 
 #cree les trous
 #coord obtenues en zoomant sur image 
-holes = [
-  (55, 63),
-  (592, 48),
-  (1134, 64),
-  (55, 616),
-  (592, 629),
-  (1134, 616)
-]
+holes = [(55, 63), (592, 48), (1134, 64), (55, 616), (592, 629), (1134, 616)]
 
 #coord des cotés
-sides = [
-  [(88, 56), (109, 77), (555, 77), (564, 56)],
-  [(621, 56), (630, 77), (1081, 77), (1102, 56)],
-  [(89, 621), (110, 600),(556, 600), (564, 621)],
-  [(622, 621), (630, 600), (1081, 600), (1102, 621)],
-  [(56, 96), (77, 117), (77, 560), (56, 581)],
-  [(1143, 96), (1122, 117), (1122, 560), (1143, 581)]
-] #obtenus en zoomant sur l'image et selectionnant pixel correspondant
+sides = [ [(88, 56), (109, 77), (555, 77), (564, 56)],
+          [(621, 56), (630, 77), (1081, 77), (1102, 56)],
+          [(89, 621), (110, 600),(556, 600), (564, 621)],
+          [(622, 621), (630, 600), (1081, 600), (1102, 621)],
+          [(56, 96), (77, 117), (77, 560), (56, 581)],
+          [(1143, 96), (1122, 117), (1122, 560), (1143, 581)]
+         ] #obtenus en zoomant sur l'image et selectionnant pixel correspondant
 
 
 #cree les cotes de la table
@@ -169,42 +199,23 @@ class Cue():
           )
 
 
-#fonctions pour "l'IA"***************************************************************************
-
-def generateAngle():
-    return random.uniform(0, 2 * math.pi) #génère un angle aléatoire en radians entre 0 et 2pi
-
-def generateForce():
-    return random.uniform(10000, 15000) #génère une force aléatoire entre 100 et 1000
-
-def generateOrientation():
-    orientationX = random.uniform(50, 1100)
-    orientationY = random.uniform(70, 620)
-    return (orientationX, orientationY)
-
-def rememberBestScenario(Pos, Score, Force):
-    maxScore = max(Score)
-    indexMax = Score.index(maxScore)
-    bestScenario = []
-    bestScenario.append((Pos[indexMax], Force[indexMax]))
-    return bestScenario
-#*************************************************************************************************
-
 #print(generateOrientation())
 
 cue = Cue(balls[-1].body.position)
 
 #boucle de jeu
 run = True
-nbCoupsFinal = 10 #nombre de coups que va faire l'IA
+nbCoupsFinal = 2 #nombre de coups que va faire l'IA
 compteurCoups = 0 #compteur de coups
 nbGene = 1 #nombre de generation de l'IA
 compteurGene = 0
+
 #tableaux pour stocker les attributs de l'IA
 Pos = [] #on y stockera les orientations du tir
 Force = [] #on y stockera l'intensité du tir
 Score = [] #on y stockera les scores à la fin du nombre de tirs définis 
-Attributs = [] #va contenir Pos force et score
+AttributsCoups = [] #va contenir Pos force et score
+AttributsGene = [] #va contenir les AttributsCoups de toutes les géné
 #on gardera uniquement celui avec le meilleur score
 #*******************************************
 
@@ -257,7 +268,7 @@ while run:
     
 
     #IA joue
-    if takingShot == True and compteurCoups < nbCoupsFinal:
+    if takingShot == True and compteurCoups < nbCoupsFinal and compteurGene <= nbGene:
         if isCueBallPocketed == True:
             #replace la boule blanche
             balls[-1].body.position = (888, height / 2) #coord d'origine
@@ -275,7 +286,7 @@ while run:
         cue.draw(screen)
 
     #puissance queue  
-    if takingShot == True and compteurCoups < nbCoupsFinal:
+    if takingShot == True and compteurCoups < nbCoupsFinal and compteurGene <= nbGene:
         xImpulse = math.cos(math.radians(cueAngle)) #composant suivant x de la force
         yImpulse = math.sin(math.radians(cueAngle))
         
@@ -289,21 +300,31 @@ while run:
         Pos.append((xImpulse, yImpulse))
         Score.append(points)
         if compteurCoups != 0:
-            Attributs.append( [ Score[compteurCoups], Force[compteurCoups], Pos[compteurCoups] ] ) 
+            AttributsCoups.append( [ Score[compteurCoups], Force[compteurCoups], Pos[compteurCoups] ] ) 
               
         else: 
-            Attributs.append( [Score[0], Force[0], Score[0]])
+            AttributsCoups.append( [Score[0], Force[0], Score[0]])
 
         points = 0 #on veut stocker le score relatif de chaque coups donc on reinitialise à chaque coup
         force = 0
         forceDir = 1
         compteurCoups+=1
-        print(compteurCoups)
-        print(Attributs)
+        print("*Génération numéro " + str(compteurGene + 1) +"*: ")
+        print("Attributs de génération: " +str(AttributsGene))
+        print("- Coup numéro " +str(compteurCoups) +": ")
+        print(AttributsCoups)
 
-    if compteurCoups >= nbCoupsFinal and compteurCoups != 10000:
-        print(Attributs)
-        compteurCoups = 10000 #juste pour pas que ca affiche les listes à l'infini
+    if compteurCoups >= nbCoupsFinal and compteurGene <= nbGene :
+        reInitBalls()
+        
+        AttributsGene.append( AttributsCoups )
+        AttributsCoups = []
+        
+        if compteurGene >= nbGene:
+            BestAttributes = chooseBestAttributes(AttributsGene, nbGene, nbCoupsFinal)
+            print("Meilleurs attributs: " + str(BestAttributes))
+        compteurGene += 1 #on passe à une autre génération
+        compteurCoups = 0 
     
     #affiche le score
     pygame.draw.rect(screen, background, (0, height, width, outerHeight))
