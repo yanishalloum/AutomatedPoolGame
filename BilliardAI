@@ -46,15 +46,15 @@ police = pygame.font.SysFont("Lato", 30) #police et taille
 largePolice = pygame.font.SysFont("Lato",60)
 
 #images****************
-tableImage = pygame.image.load("BilliardAI/images/table.png").convert_alpha()
+tableImage = pygame.image.load("pool_tutorial/assets/images/table.png").convert_alpha()
 ballImages = []
-blackBallImage = pygame.image.load("BilliardAI/images/ball_8.png").convert_alpha()
+blackBallImage = pygame.image.load("pool_tutorial/assets/images/ball_8.png").convert_alpha()
 ballImages.append(blackBallImage)
 for i in range(1, 17):
     if i != 8:
-        ballImage = pygame.image.load(f"BilliardAI/images/ball_{i}.png").convert_alpha()
+        ballImage = pygame.image.load(f"pool_tutorial/assets/images/ball_{i}.png").convert_alpha()
         ballImages.append(ballImage)
-cueImage = pygame.image.load(f"BilliardAI/images/cue.png").convert_alpha()
+cueImage = pygame.image.load(f"pool_tutorial/assets/images/cue.png").convert_alpha()
 #***********************
 
 #ecrit texte sur l'ecran 
@@ -193,13 +193,13 @@ powerGauge.fill(red)
 #boucle de jeu
 run = True
 n = 3 #nombre de coups que va faire l'IA
-i = 0 #compteur de coups
+compteur = 0 #compteur de coups
 while run: 
 
     clock.tick(FPS) #definit combien de fois par seconde le jeu s'actualise
     space.step(1 / FPS) 
     
-    #remplit le fond
+    #remplis le fond
     screen.fill(background)
     isCueBallPocketed = False
 
@@ -248,7 +248,7 @@ while run:
     #on gardera uniquement celui avec le meilleur score
     #*******************************************
     #IA joue
-    if takingShot == True:
+    if takingShot == True and compteur <= n:
         if isCueBallPocketed == True:
             #replace la boule blanche
             balls[-1].body.position = (888, height / 2) #coord d'origine
@@ -266,11 +266,15 @@ while run:
         cue.draw(screen)
 
     #puissance queue  
-    if takingShot == True:
+    if takingShot == True and compteur <= n:
         xImpulse = math.cos(math.radians(cueAngle)) #composant suivant x de la force
         yImpulse = math.sin(math.radians(cueAngle))
+        compteur+=1 #un coup correspond à une application de force sur la boule blanche
+        
         balls[-1].body.apply_impulse_at_local_point((force * (-xImpulse), force * yImpulse), (0,0))#(dx,dy) valeur de l'implusion (x,y) coord application de l'impulsion
         #balls[-1]: dernier element de la liste = cueBall = bouleBlance
+        compteur+=1
+        print(compteur)
         force = 0
         forceDir = 1
 
