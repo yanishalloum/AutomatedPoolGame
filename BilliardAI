@@ -169,21 +169,29 @@ class Cue():
           )
 
 
-#fonctions pour "l'IA"
+#fonctions pour "l'IA"***************************************************************************
 
 def generateAngle():
     return random.uniform(0, 2 * math.pi) #génère un angle aléatoire en radians entre 0 et 2pi
 
 def generateForce():
-    return random.uniform(100, 10000) #génère une force aléatoire entre 100 et 1000
+    return random.uniform(1000, 10000) #génère une force aléatoire entre 100 et 1000
 
 def generateOrientation():
     orientationX = random.uniform(50, 1100)
     orientationY = random.uniform(70, 620)
     return (orientationX, orientationY)
-#*************************
 
-print(generateOrientation())
+def rememberBestScenario(Pos, Score, Force):
+    maxScore = max(Score)
+    indexMax = Score.index(maxScore)
+    bestScenario = []
+    bestScenario.append((Pos[indexMax], Force[indexMax]))
+    return bestScenario
+#*************************************************************************************************
+
+#print(generateOrientation())
+
 cue = Cue(balls[-1].body.position)
 
 #jauge de puissance de la queue
@@ -192,8 +200,9 @@ powerGauge.fill(red)
 
 #boucle de jeu
 run = True
-n = 3 #nombre de coups que va faire l'IA
+nbCoupsFinal = 10 #nombre de coups que va faire l'IA
 compteur = 0 #compteur de coups
+nbGene = 1 #nombre de generation de l'IA
 while run: 
 
     clock.tick(FPS) #definit combien de fois par seconde le jeu s'actualise
@@ -217,7 +226,7 @@ while run:
                     points -= 5
                     
                     isCueBallPocketed = True 
-                    ball.body.position = (-1000, -1000) #sort la boule de la table
+                    ball.body.position = ((888, height / 2))
                     ball.body.velocity = (0, 0) #arrete le mouvement
                     #reInitBalls()       
                 else:  
@@ -248,7 +257,7 @@ while run:
     #on gardera uniquement celui avec le meilleur score
     #*******************************************
     #IA joue
-    if takingShot == True and compteur <= n:
+    if takingShot == True and compteur < nbCoupsFinal:
         if isCueBallPocketed == True:
             #replace la boule blanche
             balls[-1].body.position = (888, height / 2) #coord d'origine
@@ -266,17 +275,24 @@ while run:
         cue.draw(screen)
 
     #puissance queue  
-    if takingShot == True and compteur <= n:
+    if takingShot == True and compteur < nbCoupsFinal:
         xImpulse = math.cos(math.radians(cueAngle)) #composant suivant x de la force
         yImpulse = math.sin(math.radians(cueAngle))
-        compteur+=1 #un coup correspond à une application de force sur la boule blanche
         
         balls[-1].body.apply_impulse_at_local_point((force * (-xImpulse), force * yImpulse), (0,0))#(dx,dy) valeur de l'implusion (x,y) coord application de l'impulsion
         #balls[-1]: dernier element de la liste = cueBall = bouleBlance
         compteur+=1
-        print(compteur)
+        #print(compteur)
+
+        #stockage des attributs
+        Force.append(force)
+        Pos.append((xImpulse, yImpulse))
+
         force = 0
         forceDir = 1
+
+    if compteur >= nbCoupsFinal:
+        Score.append(points)
 
     #affiche le score
     pygame.draw.rect(screen, background, (0, height, width, outerHeight))
