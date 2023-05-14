@@ -175,7 +175,7 @@ def generateAngle():
     return random.uniform(0, 2 * math.pi) #génère un angle aléatoire en radians entre 0 et 2pi
 
 def generateForce():
-    return random.uniform(1000, 10000) #génère une force aléatoire entre 100 et 1000
+    return random.uniform(10000, 15000) #génère une force aléatoire entre 100 et 1000
 
 def generateOrientation():
     orientationX = random.uniform(50, 1100)
@@ -194,15 +194,20 @@ def rememberBestScenario(Pos, Score, Force):
 
 cue = Cue(balls[-1].body.position)
 
-#jauge de puissance de la queue
-powerGauge = pygame.Surface((10, 20)) #(width, height)
-powerGauge.fill(red)
-
 #boucle de jeu
 run = True
 nbCoupsFinal = 10 #nombre de coups que va faire l'IA
-compteur = 0 #compteur de coups
+compteurCoups = 0 #compteur de coups
 nbGene = 1 #nombre de generation de l'IA
+compteurGene = 0
+#tableaux pour stocker les attributs de l'IA
+Pos = [] #on y stockera les orientations du tir
+Force = [] #on y stockera l'intensité du tir
+Score = [] #on y stockera les scores à la fin du nombre de tirs définis 
+Attributs = [] #va contenir Pos force et score
+#on gardera uniquement celui avec le meilleur score
+#*******************************************
+
 while run: 
 
     clock.tick(FPS) #definit combien de fois par seconde le jeu s'actualise
@@ -224,9 +229,8 @@ while run:
                 #vérifie si la boule rentrée est la blanche ou pas
                 if i == len(balls) - 1: #la boule blanche est tjrs en dernière position de la liste
                     points -= 5
-                    
                     isCueBallPocketed = True 
-                    ball.body.position = ((888, height / 2))
+                    ball.body.position = ((888, height / 2)) #on replace la boule à l'endroit initial (si ya deja une boule à cette position jsp ce qu'il se passe mais tres rare)
                     ball.body.velocity = (0, 0) #arrete le mouvement
                     #reInitBalls()       
                 else:  
@@ -250,14 +254,10 @@ while run:
         if int(ball.body.velocity[0]) != 0 or int(ball.body.velocity[1]) != 0: #vitesse suivant x et y. "int" convertit la vitesse à l'entier: si v =0.0001 -> v=0 et immobile
             takingShot = False
 
-    #tableaux pour stocker les attributs de l'IA
-    Pos = [] #on y stockera les orientations du tir
-    Force = [] #on y stockera l'intensité du tir
-    Score = [] #on y stockera les scores à la fin du nombre de tirs définis 
-    #on gardera uniquement celui avec le meilleur score
-    #*******************************************
+    
+
     #IA joue
-    if takingShot == True and compteur < nbCoupsFinal:
+    if takingShot == True and compteurCoups < nbCoupsFinal:
         if isCueBallPocketed == True:
             #replace la boule blanche
             balls[-1].body.position = (888, height / 2) #coord d'origine
@@ -275,25 +275,36 @@ while run:
         cue.draw(screen)
 
     #puissance queue  
-    if takingShot == True and compteur < nbCoupsFinal:
+    if takingShot == True and compteurCoups < nbCoupsFinal:
         xImpulse = math.cos(math.radians(cueAngle)) #composant suivant x de la force
         yImpulse = math.sin(math.radians(cueAngle))
         
         balls[-1].body.apply_impulse_at_local_point((force * (-xImpulse), force * yImpulse), (0,0))#(dx,dy) valeur de l'implusion (x,y) coord application de l'impulsion
         #balls[-1]: dernier element de la liste = cueBall = bouleBlance
-        compteur+=1
+        
         #print(compteur)
 
         #stockage des attributs
         Force.append(force)
         Pos.append((xImpulse, yImpulse))
+        Score.append(points)
+        if compteurCoups != 0:
+            Attributs.append( [ Score[compteurCoups], Force[compteurCoups], Pos[compteurCoups] ] ) 
+              
+        else: 
+            Attributs.append( [Score[0], Force[0], Score[0]])
 
+        points = 0 #on veut stocker le score relatif de chaque coups donc on reinitialise à chaque coup
         force = 0
         forceDir = 1
+        compteurCoups+=1
+        print(compteurCoups)
+        print(Attributs)
 
-    if compteur >= nbCoupsFinal:
-        Score.append(points)
-
+    if compteurCoups >= nbCoupsFinal and compteurCoups != 10000:
+        print(Attributs)
+        compteurCoups = 10000 #juste pour pas que ca affiche les listes à l'infini
+    
     #affiche le score
     pygame.draw.rect(screen, background, (0, height, width, outerHeight))
     drawText( "Points: " + str(points), police, white, width - 200, height + 10)
@@ -303,13 +314,7 @@ while run:
         screen.blit(ball, (10 + (i * 50), height+ 10))
 
     #crée et gère évenements********************
-    for event in pygame.event.get():
-        #si bouton pressé tire la boule
-        if event.type == pygame.MOUSEBUTTONDOWN and takingShot == True:
-            powerIncrease = True
-        if event.type == pygame.MOUSEBUTTONUP and takingShot == True:
-            powerIncrease = False
-           
+    for event in pygame.event.get():    
         #Ferme la fenetre si on appuie sur close
         if event.type == pygame.QUIT:
             run = False
