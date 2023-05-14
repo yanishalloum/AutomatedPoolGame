@@ -9,4 +9,4 @@ Bibliothèques nécessaires:
 - pygame: dessin
 - pymunk: physique des objets 
 Installation: Dans Termial PowerShell: pip install pygame
-                         pip install pymunk 
+                                       pip install pymunk 
