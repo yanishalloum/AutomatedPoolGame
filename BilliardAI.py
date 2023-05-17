@@ -3,7 +3,6 @@ import pymunk
 import pymunk.pygame_util 
 import math
 import random
-import time
 
 pygame.init()#initialise la lib pygame
 
@@ -57,7 +56,6 @@ for i in range(1, 16):
         ballImages.append(ballImage)
 ballImage = pygame.image.load(f"pool_tutorial/assets/images/boule16.png").convert_alpha()
 ballImages.append(ballImage)
-cueImage = pygame.image.load(f"pool_tutorial/assets/images/cue.png").convert_alpha()
 #***********************
 
 #ecrit texte sur l'ecran 
