@@ -3,6 +3,7 @@ import pymunk
 import pymunk.pygame_util 
 import math
 import random
+import time
 
 pygame.init()#initialise la lib pygame
 
@@ -152,24 +153,6 @@ for c in sides:
     createSide(c) #rend les cotés de la table solide
 
 #cree queue
-class Cue():
-    def __init__(self, pos):
-        self.originalImage = cueImage
-        self.angle = 0
-        self.image = pygame.transform.rotate(self.originalImage, self.angle)
-        self.rect = self.image.get_rect()
-        self.rect.center = pos
-
-    def update(self, angle):
-        self.angle = angle
-
-    def draw(self, surface):
-        self.image = pygame.transform.rotate(self.originalImage, self.angle)
-        surface.blit(self.image, 
-          (self.rect.centerx - self.image.get_width() / 2,
-          self.rect.centery - self.image.get_height() / 2)
-          )
-
 
 #fonctions pour "l'IA"***************************************************************************
 
@@ -214,13 +197,12 @@ def chooseBestAttributes(Attributes, nbGene, nbCoups):
 
 #print(generateOrientation())
 
-cue = Cue(balls[-1].body.position)
 
 #boucle de jeu
 run = True
-nbCoupsFinal = 3 #nombre de coups que va faire l'IA
+nbCoupsFinal = 2 #nombre de coups que va faire l'IA
 compteurCoups = 0 #compteur de coups
-nbGene = 2 #nombre de generation de l'IA
+nbGene = 5 #nombre de generation de l'IA
 compteurGene = 0
 isNewGene = False
 
@@ -234,7 +216,6 @@ AttributsGene = [] #va contenir les AttributsCoups de toutes les géné
 #*******************************************
 
 while run: 
-
     clock.tick(FPS) #definit combien de fois par seconde le jeu s'actualise
     space.step(1 / FPS) 
     
@@ -291,13 +272,10 @@ while run:
         pos = generateOrientation()
         force = generateForce()
         #print(mousePos)
-        cue.rect.center = balls[-1].body.position #queue suit la boule blanche
         xDist = balls[-1].body.position[0] - pos[0]
         yDist = -(balls[-1].body.position[1] - pos[1]) #-1 car pygame y decroissant vers le haut
         cueAngle = math.degrees(math.atan2(yDist, xDist))
         #****************************
-        cue.update(cueAngle)
-        cue.draw(screen)
 
     #puissance queue  
     if takingShot == True and compteurCoups < nbCoupsFinal and compteurGene <= nbGene:
@@ -322,7 +300,6 @@ while run:
         
         forceDir = 1
         compteurCoups+=1
-        print("*Génération numéro " + str(compteurGene + 1) +"*: ")
         print("Attributs de génération: " +str(AttributsGene))
         print("- Coup numéro " +str(compteurCoups) +": ")
         print("Attributs de coups: " + str(AttributsCoups))
@@ -333,6 +310,7 @@ while run:
         AttributsCoups = []
         
         if compteurGene >= nbGene:
+            print("*Génération numéro " + str(compteurGene + 1) +"*: ")
             BestAttributes = chooseBestAttributes(AttributsGene, nbGene, nbCoupsFinal)
             print("Meilleurs attributs: " + str(BestAttributes))
         compteurGene += 1 #on passe à une autre génération
