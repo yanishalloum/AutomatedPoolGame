@@ -155,16 +155,16 @@ for c in sides:
 
 
 def generateForce():
-    return random.uniform(9000, 15000) #génère une force aléatoire entre 100 et 1000
+    return random.uniform(9000, 15000) #génère une force aléatoire entre 9000 et 15000
 
-def generateOrientation():
+def generateOrientation(): #génère un couple (x,y) aléatoire compris dans les dimensions de la table
     orientationX = random.uniform(50, 1100)
     orientationY = random.uniform(70, 620)
     return (orientationX, orientationY)
 
 #*************************************************************************************************
 
-def getBestParameters(Score, Force, Pos, PosBoules):
+def getBestParameters(Score, Force, Pos, PosBoules): #détermine les meilleurs paramètres parmis toutes les simulations d'un coup
     bestScore = max(Score)
     indexMax = Score.index(bestScore)
 
@@ -179,7 +179,7 @@ def getBestParameters(Score, Force, Pos, PosBoules):
     
     return BestParameters
 
-def placeBalls(PosBoules):
+def placeBalls(PosBoules): #place les boules aux positions données en entrée
     for i, ball in enumerate(balls):
         ball.body.position = PosBoules[i]
 
@@ -188,7 +188,7 @@ Pos = [] #on y stockera les orientations du tir
 Force = [] #on y stockera l'intensité du tir
 Score = [] #on y stockera les scores à la fin du nombre de tirs définis 
 AttributsCoups = [] #va contenir Pos force et score pour tous les meilleurs coups sauvegardés
-PosBoules = []
+PosBoules = [] #retient les coordonnées des boules lors d'un meilleur coup
 #on gardera uniquement celui avec le meilleur score
 #*******************************************
 
