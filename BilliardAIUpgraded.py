@@ -316,6 +316,8 @@ while (True):
     #affiche le score
     pygame.draw.rect(screen, background, (0, height, width, outerHeight))
     drawText( "Points: " + str(points), police, white, width - 200, height + 10)
+    drawText( "Simulation numéro " + str(compteurNbSimulations + 1), police, white, 0, height)
+    drawText( "Coup numéro " + str(compteurNbCoups), police, white, 0, height + 30)
 
     #affiche boules rentrées dans le recapitulatif
     for i, ball in enumerate(pocketedBallsImages):
