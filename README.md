@@ -11,8 +11,9 @@ Requirements:
 Bibliothèques nécessaires: 
 - pygame: dessin
 - pymunk: physique des objets 
-- Installation: Dans Termial PowerShell: pip install pygame
-                                       pip install pymunk 
+- Installation: Dans Termial PowerShell: 1) pip install pygame
+                                         2) pip install pymunk 
+                                       
 Pour cloner le projet:
   - Copier le lien ssh ou https
   - Ouvrir un terminal linux
