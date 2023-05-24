@@ -155,16 +155,16 @@ for c in sides:
 
 
 def generateForce():
-    return random.uniform(9000, 15000) #génère une force aléatoire entre 9000 et 15000
+    return random.uniform(9000, 15000) #génère une force aléatoire entre 100 et 1000
 
-def generateOrientation(): #génère un couple (x,y) aléatoire compris dans les dimensions de la table
+def generateOrientation():
     orientationX = random.uniform(50, 1100)
     orientationY = random.uniform(70, 620)
     return (orientationX, orientationY)
 
 #*************************************************************************************************
 
-def getBestParameters(Score, Force, Pos, PosBoules): #détermine les meilleurs paramètres parmis toutes les simulations d'un coup
+def getBestParameters(Score, Force, Pos, PosBoules):
     bestScore = max(Score)
     indexMax = Score.index(bestScore)
 
@@ -179,7 +179,7 @@ def getBestParameters(Score, Force, Pos, PosBoules): #détermine les meilleurs p
     
     return BestParameters
 
-def placeBalls(PosBoules): #place les boules aux positions données en entrée
+def placeBalls(PosBoules):
     for i, ball in enumerate(balls):
         ball.body.position = PosBoules[i]
 
@@ -188,14 +188,14 @@ Pos = [] #on y stockera les orientations du tir
 Force = [] #on y stockera l'intensité du tir
 Score = [] #on y stockera les scores à la fin du nombre de tirs définis 
 AttributsCoups = [] #va contenir Pos force et score pour tous les meilleurs coups sauvegardés
-PosBoules = [] #retient les coordonnées des boules lors d'un meilleur coup
+PosBoules = []
 #on gardera uniquement celui avec le meilleur score
 #*******************************************
 
 
 nbCoupsParSimulation = 3
 compteurNbCoups = 0
-nbSimulations = 2
+nbSimulations = 4
 compteurNbSimulations = 0
 
 while (True):
@@ -275,6 +275,7 @@ while (True):
 
             if compteurNbSimulations == 0:
                 reInitBalls()
+                balls[-1].body.position = (888, height / 2) #coord d'origine
             else : 
                 placeBalls(posCoupPrece)    
             points = 0
@@ -290,7 +291,7 @@ while (True):
             posCoupPrece = posBoules
 
             placeBalls(posBoules)
-            points = 0
+            points += max(Score)
 
             if (type(pos) == float):
                 xDist = balls[-1].body.position[0] - pos
