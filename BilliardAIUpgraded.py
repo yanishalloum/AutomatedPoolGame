@@ -28,11 +28,9 @@ FPS = 120 #taux de raffraichissement et frame per sec
 d = 36 #diametre de boule
 holeD = 66 #diametre du trou
 pocketedBallsImages = []
-pocketedBalls = []
 takingShot = True
 #force = 200
 powerIncrease = False
-maxForce = 10000
 forceDir = 1
 isCueBallPocketed = False
 points = 0
@@ -333,4 +331,3 @@ while (True):
     pygame.display.update()       
     #****************************************        
 pygame.quit()                        
-       
