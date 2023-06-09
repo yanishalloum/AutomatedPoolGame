@@ -19,3 +19,6 @@ Pour cloner le projet:
   - Ouvrir un terminal linux
   - Se placer dans le répertoire ou l'endroit où l'on veut cloner le projet
   - "git clone lien_ssh(ou lien_https)"
+
+
+CF Coding with Russ for pygame use
