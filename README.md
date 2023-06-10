@@ -21,4 +21,4 @@ Pour cloner le projet:
   - "git clone lien_ssh(ou lien_https)"
 
 
-CF Coding with Russ for pygame use
+Inspired by "Coding with Russ" for pygame use
