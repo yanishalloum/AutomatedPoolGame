@@ -45,15 +45,15 @@ police = pygame.font.SysFont("Lato", 30) #police et taille
 largePolice = pygame.font.SysFont("Lato",60)
 
 #images****************
-tableImage = pygame.image.load("pool_tutorial/assets/images/table-modified.png").convert_alpha()
+tableImage = pygame.image.load("dev_info/assets/images/table-modified.png").convert_alpha()
 ballImages = []
-blackBallImage = pygame.image.load("pool_tutorial/assets/images/boule8.png").convert_alpha()
+blackBallImage = pygame.image.load("dev_info/assets/images/boule8.png").convert_alpha()
 ballImages.append(blackBallImage)
 for i in range(1, 16):
     if i != 8:
-        ballImage = pygame.image.load(f"pool_tutorial/assets/images/boule{i}.png").convert_alpha()
+        ballImage = pygame.image.load(f"dev_info/assets/images/boule{i}.png").convert_alpha()
         ballImages.append(ballImage)
-ballImage = pygame.image.load(f"pool_tutorial/assets/images/boule16.png").convert_alpha()
+ballImage = pygame.image.load(f"dev_info/assets/images/boule16.png").convert_alpha()
 ballImages.append(ballImage)
 #***********************
 
@@ -73,7 +73,7 @@ def createBall(radius, position):
     #utilise pivot joint pour ajoute de la friction
     pivot = pymunk.PivotJoint(staticBody, body, (0,0), (0,0)) #crée lien entre corps static et boule () coord où le lien est appliqué
     pivot.max_bias = 0 #désactive le correction de jointure
-    pivot.max_force = 1000 #simule friction linéaire
+    pivot.max_force = 600 #simule friction linéaire
 
     space.add(body, shape, pivot)
     return shape
@@ -95,7 +95,7 @@ ballsInit = []
 for ball in balls: 
     ballsInit.append((ball.body.position[0], ball.body.position[1]))
     
-#print(ballsInit)
+print(ballsInit)
 #*************************
 
 #crée boule blanche (cue ball)
@@ -189,16 +189,18 @@ Force = [] #on y stockera l'intensité du tir
 Score = [] #on y stockera les scores à la fin du nombre de tirs définis 
 AttributsCoups = [] #va contenir Pos force et score pour tous les meilleurs coups sauvegardés
 PosBoules = []
+posCoupPrece = []
+notClosed = True
 #on gardera uniquement celui avec le meilleur score
 #*******************************************
 
 
-nbCoupsParSimulation = 3
+nbCoupsParSimulation = 2
 compteurNbCoups = 0
-nbSimulations = 4
+nbSimulations = 3
 compteurNbSimulations = 0
 
-while (True):
+while notClosed:
 
     clock.tick(FPS) #definit combien de fois par seconde le jeu s'actualise
     space.step(1 / FPS) 
@@ -229,18 +231,30 @@ while (True):
             if ballDist <= holeD / 2: #si la dist entre boule et trou est + petite que le rayon de la boule alors boule rentrée dans trou
                 #vérifie si la boule rentrée est la blanche ou pas
                 if i == len(balls) - 1: #la boule blanche est tjrs en dernière position de la liste
-                    points -= 5
+                    points -= 1000
                     isCueBallPocketed = True 
                     ball.body.position = ((888, height / 2)) #on replace la boule à l'endroit initial (si ya deja une boule à cette position jsp ce qu'il se passe mais tres rare)
                     ball.body.velocity = (0, 0) #arrete le mouvement
                     #reInitBalls()       
                 else:  
-                    points += 5                   
+                    points += 1000                   
                     ball.body.position = (-1000, -1000) #sort la boule de la table
                     ball.body.velocity = (0, 0) #arrete le mouvement 
-    
+
+        
+
     #IA joue
     if takingShot == True and compteurNbSimulations <= nbSimulations:
+        #verifie si les boules ont bougé
+        for i, ball in enumerate(balls):
+            if ball != cueBall: 
+                if compteurNbSimulations == 0:
+                    if ball.body.position != ballsInit[i]:
+                        points += 1
+                else:        
+                    if ball.body.position != posCoupPrece[i] and posCoupPrece != []:
+                        points += 1  
+
         if compteurNbCoups <= nbCoupsParSimulation:
             if isCueBallPocketed == True:
                 #replace la boule blanche
@@ -271,8 +285,8 @@ while (True):
                 PosBoulesCoupI.append(ball.body.position)
             
             PosBoules.append(PosBoulesCoupI)
-            print(PosBoules)
-
+            #print(PosBoules)
+            
             if compteurNbSimulations == 0:
                 reInitBalls()
                 balls[-1].body.position = (888, height / 2) #coord d'origine
@@ -289,6 +303,7 @@ while (True):
             posBoules = bestParameters[2]
 
             posCoupPrece = posBoules
+            #print(posCoupPrece)
 
             placeBalls(posBoules)
             points += max(Score)
@@ -314,6 +329,8 @@ while (True):
             Pos = []
             PosBoules = []
 
+          
+
     #affiche le score
     pygame.draw.rect(screen, background, (0, height, width, outerHeight))
     drawText( "Points: " + str(points), police, white, width - 200, height + 10)
@@ -328,9 +345,9 @@ while (True):
     for event in pygame.event.get():    
         #Ferme la fenetre si on appuie sur close
         if event.type == pygame.QUIT:
-            run = False
+            notClosed = False
     #********************************************
-    #space.debug_draw(draw_options)
+
     pygame.display.update()       
     #****************************************        
-pygame.quit()                        
+pygame.quit()                     
