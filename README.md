@@ -1,4 +1,4 @@
-# BilliardAI
+# Automatisation d'un jeu de billard
 Projet Développement Informatique TELECOM SUDPARIS HALLOUM Yanis
 
 Requirements: 
