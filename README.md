@@ -1,24 +1,21 @@
-# Automatisation d'un jeu de billard
-Projet Développement Informatique TELECOM SUDPARIS HALLOUM Yanis
+# Automation of a pool game
+Project done on Windows 11 using VM Ubuntu 22.04
 
 Requirements: 
-- Installer Python-3.11.3-amd64
-- Projet réalisé sur VsCode sous Windows 11 avec VM Ubuntu 22.04
-- Installer extensions Python recommendées par VSCode
-- Dans le dossier images: mettre les images.png des boules et de la table
-- Modifier le lien des images dans le programme: "ballImage = pygame.image.load(f"lien"/boule{i}.png").convert_alpha()
+- Have Python-3.11.3-amd64 installed.
+- Install Python extensions recommended by VSCode.
+- In the "images" repository": put the balls and table images.png.
+- Modify the images' link in the code: "ballImage = pygame.image.load(f"lien"/boule{i}.png").convert_alpha()
 
-Bibliothèques nécessaires: 
-- pygame: dessin
-- pymunk: physique des objets 
-- Installation: Dans Termial PowerShell: 1) pip install pygame (Si problème dans l'installation il faut modifier le path de python3)
-                                         2) pip install pymunk 
+Required libraries: 
+- pygame: drawings.
+- pymunk: physics of objects.
+- Download on Windows 11: In the PowerShell Terminal: 1) pip install pygame 
+                                                      2) pip install pymunk
+  (if installation issue: need to modifie the path to python3)
                                        
-Pour cloner le projet:
-  - Copier le lien ssh ou https
-  - Ouvrir un terminal linux
-  - Se placer dans le répertoire ou l'endroit où l'on veut cloner le projet
+To clone the project:
+  - Copy https or ssh link.
+  - Open a linux terminal.
+  - Go in the repository you want to clone the project in.
   - "git clone lien_ssh(ou lien_https)"
-
-
-Inspired by "Coding with Russ" for pygame use
